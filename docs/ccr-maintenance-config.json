@@ -1,0 +1,40 @@
+{
+  "ccr_maintenance": {
+    "version": "2.0",
+    "thresholds": {
+      "stuck_session_minutes": 10,
+      "stale_session_days": 7,
+      "archive_after_days": 30
+    },
+    "checks": [
+      "pending_sessions",
+      "idle_sessions", 
+      "trigger_health",
+      "environment_compatibility"
+    ],
+    "actions": {
+      "auto_archive_stuck": true,
+      "auto_archive_stale": true,
+      "disable_runaway_triggers": true
+    },
+    "logging": {
+      "enabled": true,
+      "repository": "anthropics/robo-clawd",
+      "branch_prefix": "maintenance",
+      "create_pr": true,
+      "pr_draft": true
+    },
+    "templates": {
+      "pr_title": "CCR Maintenance - {{date}}",
+      "pr_body": "## Maintenance Summary\n\n**Timestamp:** {{timestamp}}\n\n### Findings\n- Total sessions: {{total_sessions}}\n- Stuck PENDING: {{stuck_count}}\n- Stale IDLE: {{stale_count}}\n- Bad triggers: {{bad_trigger_count}}\n\n### Actions Taken\n{{#each actions}}\n- {{this}}\n{{/each}}\n\n### Post-Maintenance\n- Sessions archived: {{archived_count}}\n- Remaining issues: {{remaining_issues}}\n\nSee `logs/{{timestamp}}.json` for details.",
+      "commit_message": "maintenance: {{archived_count}} sessions archived, {{triggers_disabled}} triggers disabled",
+      "log_format": {
+        "timestamp": "{{iso_timestamp}}",
+        "operator": "{{operator}}",
+        "findings": "{{findings_json}}",
+        "actions": "{{actions_json}}",
+        "results": "{{results_json}}"
+      }
+    }
+  }
+}
